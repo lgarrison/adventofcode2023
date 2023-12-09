@@ -2,34 +2,28 @@
 
 use std::fs;
 
-fn extrapolate(vals: Vec<i64>, back: bool) -> i64 {
+fn extrapolate(vals: &Vec<i64>) -> i64 {
     if vals.iter().all(|&x| x == vals[0]) {
         vals[0]
     } else {
-        let e = extrapolate(
-            vals.iter().skip(1).zip(vals.iter())
+        extrapolate(
+            &vals.iter().skip(1).zip(vals.iter())
                 .map(|(x,y)| x-y).collect(),
-            back,
-        );
-        if back {
-            vals.first().unwrap() - e
-        } else {
-            vals.last().unwrap() + e
-        }
+        ) + vals.last().unwrap()
     }
 }
 
 fn part1(txt: &str) -> i64 {
     txt.lines()
         .map(|l| l.split_whitespace().map(|s| s.parse::<i64>().unwrap()).collect())
-        .map(|v| extrapolate(v, false))
+        .map(|v: Vec<i64>| extrapolate(&v))
         .sum()
 }
 
 fn part2(txt: &str) -> i64 {
     txt.lines()
         .map(|l| l.split_whitespace().map(|s| s.parse::<i64>().unwrap()).collect())
-        .map(|v| extrapolate(v, true))
+        .map(|v: Vec<i64>| extrapolate(&v.iter().rev().cloned().collect::<Vec<_>>()))
         .sum()
 }
 
